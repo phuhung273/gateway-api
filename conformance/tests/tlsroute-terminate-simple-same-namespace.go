@@ -49,11 +49,11 @@ var TLSRouteTerminateSimpleSameNamespace = suite.ConformanceTest{
 		certNN := types.NamespacedName{Name: "tls-checks-certificate", Namespace: ns}
 
 		timeoutConfig := config.DefaultTimeoutConfig()
-		timeoutConfig.RouteMustHaveParents = 5 * time.Minute
+		timeoutConfig.MaxTimeToConsistency = 5 * time.Minute
 
 		kubernetes.NamespacesMustBeReady(t, suite.Client, suite.TimeoutConfig, []string{ns})
 
-		gwAddr, hostnames := kubernetes.GatewayAndTLSRoutesMustBeAccepted(t, suite.Client, timeoutConfig, suite.ControllerName, kubernetes.NewGatewayRef(gwNN), routeNN)
+		gwAddr, hostnames := kubernetes.GatewayAndTLSRoutesMustBeAccepted(t, suite.Client, suite.TimeoutConfig, suite.ControllerName, kubernetes.NewGatewayRef(gwNN), routeNN)
 		if len(hostnames) != 1 {
 			t.Fatalf("unexpected error in test configuration, found %d hostnames", len(hostnames))
 		}
@@ -64,7 +64,7 @@ var TLSRouteTerminateSimpleSameNamespace = suite.ConformanceTest{
 			t.Fatalf("unexpected error finding TLS secret: %v", err)
 		}
 		t.Run("Simple TLS request matching TLSRoute should reach infra-backend", func(t *testing.T) {
-			tls.MakeTLSRequestAndExpectEventuallyConsistentResponse(t, suite.RoundTripper, suite.TimeoutConfig, gwAddr, cPem, keyPem, serverStr,
+			tls.MakeTLSRequestAndExpectEventuallyConsistentResponse(t, suite.RoundTripper, timeoutConfig, gwAddr, cPem, keyPem, serverStr,
 				http.ExpectedResponse{
 					Request:   http.Request{Host: serverStr, Path: "/"},
 					Backend:   "tls-backend",
