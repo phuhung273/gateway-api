@@ -67,7 +67,7 @@ var TLSRouteTerminateSimpleSameNamespace = suite.ConformanceTest{
 			tls.MakeTLSRequestAndExpectEventuallyConsistentResponse(t, suite.RoundTripper, timeoutConfig, gwAddr, cPem, keyPem, serverStr,
 				http.ExpectedResponse{
 					Request:   http.Request{Host: serverStr, Path: "/"},
-					Backend:   "tls-backend",
+					Backend:   "infra-backend-v2",
 					Namespace: "gateway-conformance-infra",
 				})
 		})

@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     apt-transport-https \
     gnupg \
+    libnss3-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Go
@@ -26,8 +27,13 @@ ENV PATH=$PATH:/usr/local/go/bin
 RUN curl -fsSLo /usr/local/bin/kubectl https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl \
     && chmod +x /usr/local/bin/kubectl
 
+# Install mkcert
+RUN curl -L https://github.com/FiloSottile/mkcert/releases/latest/download/mkcert-v1.4.4-linux-amd64 \
+    -o /usr/local/bin/mkcert \
+    && chmod +x /usr/local/bin/mkcert
+
 # Verify installs
-RUN go version && git --version && kubectl version --client
+RUN go version && git --version && kubectl version --client && vim --version && mkcert --version
 
 # Default workdir
 WORKDIR /workspace
