@@ -1037,3 +1037,17 @@ func BackendTLSPolicyMustHaveLatestConditions(t *testing.T, r *gatewayv1.Backend
 		}
 	}
 }
+
+// GetConfigMapData fetches the named ConfigMap
+func GetConfigMapData(client client.Client, name types.NamespacedName) (map[string]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	secret := &v1.ConfigMap{}
+	err := client.Get(ctx, name, secret)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching TLS Secret: %w", err)
+	}
+
+	return secret.Data, nil
+}
